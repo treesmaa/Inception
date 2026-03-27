@@ -1,2 +1,8 @@
+_This project has been created as part of the 42 curriculum by teesmaa._
 # Inception
-A system administration project using Docker
+## Description
+
+## Instructions
+
+## Resources
+- Docker documentation (link)
