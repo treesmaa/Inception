@@ -64,6 +64,29 @@ sudo docker run hello-world
 
 This command downloads a test image and then runs it in a container. A confirmation message is printed and then the container exits.
 
+To verify that docker and docker compose are installed:
+```json
+docker --version
+docker compose version
+```
+To check if docker is enabled and running:
+```json
+sudo systemctl status docker
+```
+
+To start docker:
+```json
+sudo systemctl start docker
+```
+To enanable docker:
+```json
+sudo systemctl enable docker
+```
+
+To add user to docker group:
+```json
+sudo usermod -aG docker $USER
+```
 ## Folder Structure
 
 

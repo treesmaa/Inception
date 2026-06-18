@@ -1,12 +1,51 @@
 services:
+
   nginx:
-    build: requirements/nginx/
-    container_name: nginx
+    hostname: nginx
+    build:
+      context: ./requirements/nginx/
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - wordpress
     ports:
-      - "80:80"
+      - 443:443
+    expose: 
+      - "9000"
+
   wordpress:
-    build: requirements/wordpress/
+    build:
+      context: ./requirements/wordpress/
     container_name: wordpress-php
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on: mariadb
+    restart: always
+    expose:
+      - "9000"
+      - "3306"
+
   mariadb:
-    build: requirements/mariadb
-    container name: mariadb
+    build:
+      context: ./requirements/mariadb
+    container_name: mariadb
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    restart: always
+    expose:
+      - "3306"
+
+volumes:
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/data/mariadb
+
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/data/wordpress

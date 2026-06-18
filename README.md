@@ -18,5 +18,6 @@ _This project has been created as part of the 42 curriculum by teesmaa._
 # Resources
 
 - [Docker Docs](https://docs.docker.com/)
+- [MariaDB Docs](https://mariadb.com/docs)
 
 
