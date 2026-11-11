@@ -11,7 +11,9 @@ services:
       - wordpress
     networks:
       - inception
-    
+    volumes:
+      - wordpress_data:/var/www/html:ro
+
 
   wordpress:
     container_name: wordpress
@@ -61,13 +63,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /Users/triinueesmaa/data/mariadb_data
+      device: /home/teesmaa/data/mariadb
   wordpress_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /Users/triinueesmaa/data/wordpress_data
+      device: /home/teesmaa/data/wordpress
 
 networks:
   inception:
