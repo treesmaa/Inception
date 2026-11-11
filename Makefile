@@ -1,31 +1,23 @@
+COMPOSE = docker compose --env-file srcs/.env -f srcs/docker-compose.yml
+
 all: up
 
 up:
-	docker compose -f srcs/docker-compose.yml up --detach --build
+    $(COMPOSE) up --detach --build
 
 down:
-	docker compose -f srcs/docker-compose.yml down
+    $(COMPOSE) down
 
-# add -d flag to compose up to run in detached mode get control of the terminal back
-#build
-#rebuild
 start:
-	docker compose -f srcs/docker-compose.yml start
+    $(COMPOSE) start
 
 stop:
-	docker compose -f srcs/docker-compose.yml stop
+    $(COMPOSE) stop
 
 restart:
-	docker compose -f srcs/docker-compose.yml restart
+    $(COMPOSE) restart
 
 logs:
-	docker compose -f srcs/docker-compose.yml logs -f
-
-#ps
-#clean
-#--volumes or -v to remove any anonymous volumes attached to the container
-#fclean
-#re
-#prune
+    $(COMPOSE) logs -f
 
 .PHONY: all up down start stop restart logs

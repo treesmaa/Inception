@@ -23,7 +23,7 @@ services:
     networks:
       - inception
     environment:
-      MARIADB_HOST: "${MARIADB_HOST}"
+      MARIADB_HOST: ${MARIADB_HOST}
       MARIADB_DATABASE: ${MARIADB_DATABASE}
       MARIADB_USER: ${MARIADB_USER}
       WP_URL: ${WP_URL}
@@ -33,9 +33,8 @@ services:
       WP_USER: ${WP_USER}
       WP_USER_EMAIL: ${WP_USER_EMAIL}
     secrets:
-      - mdb_password
-      - wp_admin_password
-      - wp_user_password
+      - db_password
+      - credentials
     volumes:
       - wordpress_data:/var/www/html
     depends_on:
@@ -52,8 +51,8 @@ services:
       MARIADB_DATABASE: ${MARIADB_DATABASE}
       MARIADB_USER: ${MARIADB_USER}
     secrets:
-      - mdb_password
-      - mdb_root_password
+      - db_password
+      - db_root_password
     volumes:
       - mariadb_data:/var/lib/mysql
 
@@ -76,11 +75,10 @@ networks:
     driver: bridge
 
 secrets:
-  mdb_root_password:
-    file: ./secrets/mdb_root_password.txt
-  mdb_password:
-    file: ./secrets/mdb_password.txt
-  wp_admin_password:
-    file: ./secrets/wp_admin_password.txt
-  wp_user_password:
-    file: ./secrets/wp_user_password.txt
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  db_password:
+    file: ../secrets/db_password.txt
+  credentials:
+    file: ../secrets/credentials.txt
+

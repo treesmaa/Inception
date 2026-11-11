@@ -9,8 +9,8 @@ INIT_SOCKET="/run/mysqld/init.sock"
 : "${MARIADB_DATABASE:?MARIADB_DATABASE must be set}"
 : "${MARIADB_USER:?MARIADB_USER must be set}"
 
-MARIADB_PASSWORD=$(cat /run/secrets/mdb_password) || exit 1
-MARIADB_ROOT_PASSWORD=$(cat /run/secrets/mdb_root_password) || exit 1
+MARIADB_PASSWORD=$(cat /run/secrets/db_password) || exit 1
+MARIADB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password) || exit 1
 
 # Runtime directories
 mkdir -p /run/mysqld

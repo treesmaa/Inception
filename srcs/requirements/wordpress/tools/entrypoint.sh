@@ -4,7 +4,7 @@ set -eu
 
 cd /var/www/html
 
-# Check required environment variables
+# Required non-secret environment variables
 : "${MARIADB_HOST:?MARIADB_HOST must be set}"
 : "${MARIADB_DATABASE:?MARIADB_DATABASE must be set}"
 : "${MARIADB_USER:?MARIADB_USER must be set}"
@@ -17,9 +17,14 @@ cd /var/www/html
 : "${WP_USER:?WP_USER must be set}"
 : "${WP_USER_EMAIL:?WP_USER_EMAIL must be set}"
 
-MARIADB_PASSWORD=$(cat /run/secrets/mdb_password) || exit 1
-WP_ADMIN_PASS=$(cat /run/secrets/wp_admin_password) || exit 1
-WP_USER_PWD=$(cat /run/secrets/wp_user_password) || exit 1
+# Read secrets
+MARIADB_PASSWORD="$(cat /run/secrets/db_password)"
+WP_ADMIN_PWD="$(sed -n 's/^WP_ADMIN_PWD=//p' /run/secrets/credentials)"
+WP_USER_PWD="$(sed -n 's/^WP_USER_PWD=//p' /run/secrets/credentials)"
+
+: "${MARIADB_PASSWORD:?Database password is empty}"
+: "${WP_ADMIN_PWD:?WP_ADMIN_PWD is missing from credentials.txt}"
+: "${WP_USER_PWD:?WP_USER_PWD is missing from credentials.txt}"
 
 # Wait until MariaDB is reachable
 echo "Waiting for MariaDB..."
@@ -67,7 +72,7 @@ if ! wp core is-installed --allow-root; then
         --url="${WP_URL}" \
         --title="${WP_TITLE}" \
         --admin_user="${WP_ADMIN_USER}" \
-        --admin_password="${WP_ADMIN_PASS}" \
+        --admin_password="${WP_ADMIN_PWD}" \
         --admin_email="${WP_ADMIN_EMAIL}"
 fi
 

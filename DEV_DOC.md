@@ -287,7 +287,7 @@ The script is organized into these phases:
 
 1. **Enable strict shell behavior and validate configuration**
 
-    `set -euo pipefail` makes the script stop when a command fails, an unset variable is used, or a pipeline fails. The `MARIADB_DATABASE` and `MARIADB_USER` environment variables are required. The application and root passwords are read from Docker secrets mounted at `/run/secrets/mdb_password` and `/run/secrets/mdb_root_password`.
+    `set -euo pipefail` makes the script stop when a command fails, an unset variable is used, or a pipeline fails. The `MARIADB_DATABASE` and `MARIADB_USER` environment variables are required. The application and root passwords are read from Docker secrets mounted at `/run/secrets/db_password` and `/run/secrets/db_root_password`.
 
 2. **Prepare MariaDB directories**
 
@@ -535,7 +535,7 @@ environment:
     MARIADB_DATABASE: ${MARIADB_DATABASE}
     MARIADB_USER: ${MARIADB_USER}
 secrets:
-    - mdb_password
+    - db_password
     - mdb_root_password
 ```
 
@@ -590,8 +590,8 @@ The secret files are stored in `srcs/secrets/`:
 
 ```text
 srcs/secrets/
-├── mdb_password.txt
-├── mdb_root_password.txt
+├── db_password.txt
+├── db_root_password.txt
 ├── wp_admin_password.txt
 └── wp_user_password.txt
 ```
@@ -601,17 +601,17 @@ The top-level `secrets` section maps Compose secret names to these files:
 ```yaml
 secrets:
     mdb_root_password:
-        file: ./secrets/mdb_root_password.txt
-    mdb_password:
-        file: ./secrets/mdb_password.txt
+        file: ./secrets/db_root_password.txt
+    db_password:
+        file: ./secrets/db_password.txt
     wp_admin_password:
         file: ./secrets/wp_admin_password.txt
     wp_user_password:
         file: ./secrets/wp_user_password.txt
 ```
 
-- `mdb_root_password` is read by the MariaDB entrypoint to set the remote root account password.
-- `mdb_password` is read by both the MariaDB and WordPress entrypoints for the application database user.
+- `db_root_password` is read by the MariaDB entrypoint to set the remote root account password.
+- `db_password` is read by both the MariaDB and WordPress entrypoints for the application database user.
 - `wp_admin_password` is read by the WordPress entrypoint when creating the administrator account.
 - `wp_user_password` is read by the WordPress entrypoint when creating the regular WordPress user.
 
@@ -620,17 +620,17 @@ The service-level `secrets` section grants a container access to only the secret
 ```yaml
 wordpress:
     secrets:
-        - mdb_password
+        - db_password
         - wp_admin_password
         - wp_user_password
 
 mariadb:
     secrets:
-        - mdb_password
+        - db_password
         - mdb_root_password
 ```
 
-Inside the containers, the secrets are available as files such as `/run/secrets/mdb_password`. The secret values should not be committed to version control or copied into the documentation.
+Inside the containers, the secrets are available as files such as `/run/secrets/db_password`. The secret values should not be committed to version control or copied into the documentation.
 
 ## Environment Variables
 
