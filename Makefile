@@ -5,6 +5,10 @@ all: up
 up:
 	$(COMPOSE) up --detach --build
 
+rebuild:
+	$(COMPOSE) build --no-cache
+	$(COMPOSE) up --detach --force-recreate
+
 down:
 	$(COMPOSE) down
 
@@ -20,4 +24,4 @@ restart:
 logs:
 	$(COMPOSE) logs -f
 
-.PHONY: all up down start stop restart logs
+.PHONY: all up rebuild down start stop restart logs
