@@ -219,7 +219,7 @@ On Linux and macOS, the hosts file is located at:
 /etc/hosts
 ```
 
-## Installation and Usage
+## Instructions
 
 ### 1. Clone the repository
 
@@ -242,8 +242,9 @@ The directory structure should look similar to this:
 inception/
 ├── Makefile
 ├── secrets/
-│   ├── credentials...
-│   └── ...
+│   ├── credentials.txt
+│   └── db_password.xt
+│   └── db_root_password.xt
 └── src/
     ├── .env
     ├── docker-compose.yml
@@ -252,8 +253,6 @@ inception/
         ├── nginx/
         └── wordpress/
 ```
-
-The exact contents of the configuration directories depend on the project implementation.
 
 ### 3. Build and start the infrastructure
 
@@ -360,7 +359,7 @@ docker network ls
 Inspect the project network:
 
 ```bash
-docker network inspect <network_name>
+docker network inspect inception
 ```
 
 ### Docker Compose
@@ -397,6 +396,8 @@ Two volumes are used:
 
 - **MariaDB volume:** Stores the database files.
 - **WordPress volume:** Stores the WordPress application files.
+
+Volumes are stored on the host machine in /home/teesmaa/data.
 
 This separation ensures that the database and website files are not lost when containers are stopped or recreated.
 
