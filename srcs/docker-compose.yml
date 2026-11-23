@@ -58,12 +58,14 @@ services:
 
 volumes:
   mariadb_data:
+    name: mariadb
     driver: local
     driver_opts:
       type: none
       o: bind
       device: /home/teesmaa/data/mariadb
   wordpress_data:
+    name: wordpress
     driver: local
     driver_opts:
       type: none
