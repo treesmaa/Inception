@@ -1,23 +1,420 @@
-_This project has been created as part of the 42 curriculum by teesmaa._
 
-# Description
+*This project has been created as part of the 42 curriculum by teesmaa.*
 
-- Also explain the use of Docker and the sources included in the project
+# Inception
 
-## Comparisons
+## Description
+
+Inception is a Docker-based infrastructure project that aims to introduce system administration using Docker and Docker Compose.
+
+The project consists of setting up a small multi-container infrastructure using custom Docker images. It hosts a WordPress website, uses MariaDB as its database management system, and uses NGINX as a reverse proxy with HTTPS enabled through a self-signed SSL certificate.
+
+The infrastructure consists of three containers:
+
+- **NGINX:** Acts as the entry point to the infrastructure. It handles incoming HTTPS connections and forwards requests to the WordPress service.
+- **WordPress + PHP-FPM:** Runs the WordPress application and processes PHP requests using PHP-FPM.
+- **MariaDB:** Stores the WordPress database, including website content, user information, and application data.
+
+Each service runs in its own container, built from a custom Docker image. Docker Compose is used to orchestrate the containers, configure their network, and manage persistent storage through Docker volumes.
+
+The infrastructure is designed to be isolated, modular, and reproducible. Each service has a clearly defined responsibility and communicates with the other services through a dedicated Docker network.
+
+## Architecture
+
+The infrastructure follows a three-tier architecture:
+
+```text
+                  User
+                    |
+                    | HTTPS (443)
+                    |
+               +---------+
+               |  NGINX  |
+               +---------+
+                    |
+                    | FastCGI
+                    |
+          +-------------------+
+          | WordPress + PHP-FPM|
+          +-------------------+
+                    |
+                    | SQL
+                    |
+              +-----------+
+              |  MariaDB  |
+              +-----------+
+```
+
+Each container has its own responsibilities:
+
+- NGINX handles incoming HTTPS requests.
+- WordPress processes application logic and communicates with MariaDB.
+- MariaDB stores persistent application data.
+
+Only NGINX is exposed to the host machine. The other services communicate through the internal Docker network.
+
+## Docker Concepts
+
 ### Virtual Machines vs Docker
 
-### Secrets vs Environment Variables
+Both virtual machines and Docker provide isolated environments in which applications can run. However, they use different approaches to virtualization.
+
+A virtual machine virtualizes an entire computer, including its hardware resources. Each VM runs its own operating system and kernel on top of a hypervisor.
+
+Docker uses operating-system-level virtualization. Containers share the host operating system's kernel while keeping their processes, filesystems, and network environments isolated.
+
+| Feature | Virtual Machine | Docker |
+|---|---|---|
+| Virtualization | Hardware-level virtualization | Operating-system-level virtualization |
+| Operating system | Each VM has its own OS | Containers share the host kernel |
+| Kernel | Separate kernel per VM | Shared host kernel |
+| Resource usage | Generally higher | Generally lower |
+| Startup time | Usually slower | Usually faster |
+| Isolation | Strong isolation through virtualization | Process and resource isolation |
+| Portability | Depends on VM image and hypervisor | Portable container images |
+| Use case | Running different operating systems | Packaging and deploying applications |
+
+Docker containers are generally more lightweight than virtual machines because they do not need to run a complete operating system.
+
+### Docker Images vs Containers
+
+A Docker image is a read-only template containing everything needed to run an application, such as its filesystem, dependencies, and configuration.
+
+A container is a running instance of an image. It adds a writable layer on top of the image and provides an isolated environment in which the application executes.
+
+In this project, custom images are built for NGINX, WordPress, and MariaDB. Docker Compose uses these images to create and manage the corresponding containers.
+
+### Docker Compose
+
+Docker Compose is a tool for defining and managing multi-container Docker applications.
+
+Instead of manually creating and configuring each container, Docker Compose uses a `docker-compose.yml` file to describe the infrastructure.
+
+It defines:
+
+- The services and their Docker images or build configurations.
+- Container names and startup dependencies.
+- Environment variables and secrets.
+- Network configuration.
+- Volume mounts for persistent storage.
+- Port mappings between the host and containers.
+
+This makes it possible to start and stop the entire infrastructure using a single command.
 
 ### Docker Network vs Host Network
 
+Docker networks allow containers to communicate with each other in an isolated network environment.
+
+In this project, a dedicated Docker network connects NGINX, WordPress, and MariaDB. Each service can communicate with the others using its service name as its hostname.
+
+For example:
+
+- NGINX forwards requests to WordPress.
+- WordPress connects to MariaDB to access the database.
+
+The Docker network isolates internal communication from the host network. Only explicitly published ports are accessible from outside the Docker network.
+
+The host network mode is different: it removes network isolation and makes the container share the host's network namespace. This means the container uses the host's network interfaces and ports directly.
+
+| Feature | Docker Network | Host Network |
+|---|---|---|
+| Network isolation | Yes | No |
+| Container communication | Through the Docker network | Through the host network |
+| IP address | Own container IP | Uses host network namespace |
+| Port mapping | Supported | Not required |
+| Use case | Isolated multi-container applications | Applications requiring direct host networking |
+
 ### Docker Volumes vs Bind Mounts
 
-# Instructions
+Docker volumes and bind mounts are both mechanisms for sharing and persisting data between the host and containers.
 
-# Resources
+**Docker volumes**
 
-- [Docker Docs](https://docs.docker.com/)
-- [MariaDB Docs](https://mariadb.com/docs)
+Volumes are managed by Docker and are stored in a location controlled by the Docker engine.
 
+They allow data to persist independently of a container's lifecycle. Removing or recreating a container does not automatically remove its associated volume.
 
+In this project, volumes are used to persist:
+
+- MariaDB database files.
+- WordPress website files.
+
+**Bind mounts**
+
+Bind mounts connect a specific file or directory on the host machine to a path inside a container.
+
+Unlike volumes, bind mounts depend on an explicitly defined host filesystem path.
+
+They are useful when files need to be directly accessible or modified from the host, for example, during development.
+
+| Feature | Docker Volume | Bind Mount |
+|---|---|---|
+| Storage location | Managed by Docker | Defined by the user |
+| Host path | Managed internally | Explicit host path |
+| Persistence | Independent of container lifecycle | Independent of container lifecycle |
+| Portability | More portable | Depends on host directory structure |
+| Typical use | Database and application data | Development and configuration files |
+
+### Environment Variables vs Docker Secrets
+
+Environment variables are used to configure applications and services at runtime.
+
+They are suitable for general configuration values, such as database names, usernames, and service settings.
+
+However, environment variables are not ideal for storing sensitive information. Depending on how they are configured, they may be visible through commands such as `docker inspect`, process information, or application logs.
+
+Docker secrets provide a mechanism for handling sensitive information, such as passwords and credentials.
+
+Secrets are mounted inside containers as files rather than being directly exposed as environment variables. This helps prevent sensitive information from being unnecessarily exposed through container configuration or application environments.
+
+In this project, environment variables and secrets are used to separate general configuration from sensitive credentials.
+
+> Note: Docker secrets have different availability and security characteristics depending on the Docker environment. In particular, standalone Docker Compose deployments do not provide exactly the same secret-management guarantees as Docker Swarm.
+
+## Project Structure
+
+The repository is organized into two main parts:
+
+- `src/`: Contains the Docker Compose configuration and the files required to build and configure the services.
+- `secrets/`: Contains sensitive information required by the infrastructure. This directory is not committed to the repository.
+
+The source directory contains the configuration and build files for the three services:
+
+- **NGINX:** Dockerfile, server configuration, and SSL certificate configuration.
+- **WordPress:** Dockerfile and configuration scripts required to install and configure WordPress and PHP-FPM.
+- **MariaDB:** Dockerfile and initialization scripts required to configure the database.
+
+The `.env` file contains general environment configuration used by Docker Compose and the services.
+
+The `secrets/` directory contains sensitive credentials, such as database and WordPress passwords.
+
+For a more detailed explanation of the configuration files and implementation, refer to the developer documentation.
+
+## Requirements
+
+Before starting the project, make sure the following tools are installed:
+
+- Docker
+- Docker Compose (or the Docker Compose plugin)
+- GNU Make
+- Git
+
+You also need to configure the required local hostname so that the domain points to your machine.
+
+For this project, the expected domain is:
+
+```text
+teesmaa.42.fr
+```
+
+Add the following entry to your hosts file if it is not already present:
+
+```text
+127.0.0.1 teesmaa.42.fr
+```
+
+On Linux and macOS, the hosts file is located at:
+
+```text
+/etc/hosts
+```
+
+## Installation and Usage
+
+### 1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd inception
+```
+
+### 2. Configure secrets and environment variables
+
+Copy the `secrets` directory into the root of the repository.
+
+Copy the `.env` file into the `src` directory.
+
+Make sure all required environment variables and secrets are configured before starting the infrastructure.
+
+The directory structure should look similar to this:
+
+```text
+inception/
+├── Makefile
+├── secrets/
+│   ├── credentials...
+│   └── ...
+└── src/
+    ├── .env
+    ├── docker-compose.yml
+    └── requirements/
+        ├── mariadb/
+        ├── nginx/
+        └── wordpress/
+```
+
+The exact contents of the configuration directories depend on the project implementation.
+
+### 3. Build and start the infrastructure
+
+From the root of the repository, run:
+
+```bash
+make
+```
+
+This command builds the custom Docker images and starts the containers using Docker Compose.
+
+### 4. Access the WordPress website
+
+Once all containers are running, open the following URL in your browser:
+
+[https://teesmaa.42.fr](https://teesmaa.42.fr)
+
+The project uses a self-signed SSL certificate. Because the certificate is not issued by a publicly trusted certificate authority, your browser will display a security warning.
+
+To continue:
+
+1. Click **Advanced**.
+2. Review the security warning.
+3. Click **Proceed to teesmaa.42.fr** (the wording may vary depending on your browser).
+
+You should now be able to access and interact with the WordPress website through HTTPS.
+
+### 5. Stop the infrastructure
+
+To stop and remove the containers and the Docker network, run:
+
+```bash
+make down
+```
+
+Persistent data stored in Docker volumes should remain available unless the volumes are explicitly removed.
+
+## Useful Docker Commands
+
+The following commands are useful for inspecting and managing the infrastructure.
+
+### Containers
+
+List running containers:
+
+```bash
+docker ps
+```
+
+List all containers, including stopped ones:
+
+```bash
+docker ps -a
+```
+
+View container logs:
+
+```bash
+docker logs <container_name>
+```
+
+Follow container logs in real time:
+
+```bash
+docker logs -f <container_name>
+```
+
+### Images
+
+List Docker images:
+
+```bash
+docker images
+```
+
+### Volumes
+
+List Docker volumes:
+
+```bash
+docker volume ls
+```
+
+Inspect the MariaDB volume:
+
+```bash
+docker volume inspect mariadb
+```
+
+Inspect the WordPress volume:
+
+```bash
+docker volume inspect wordpress
+```
+
+### Networks
+
+List Docker networks:
+
+```bash
+docker network ls
+```
+
+Inspect the project network:
+
+```bash
+docker network inspect <network_name>
+```
+
+### Docker Compose
+
+Display the status of the services:
+
+```bash
+docker compose ps
+```
+
+View logs from all services:
+
+```bash
+docker compose logs
+```
+
+Follow logs in real time:
+
+```bash
+docker compose logs -f
+```
+
+Rebuild and restart the services:
+
+```bash
+docker compose up -d --build
+```
+
+## Persistent Data
+
+The project uses Docker volumes to ensure that important application data survives container restarts and recreation.
+
+Two volumes are used:
+
+- **MariaDB volume:** Stores the database files.
+- **WordPress volume:** Stores the WordPress application files.
+
+This separation ensures that the database and website files are not lost when containers are stopped or recreated.
+
+To remove the volumes and their stored data, use:
+
+```bash
+docker compose down -v
+```
+
+**Warning:** This command permanently removes the volumes associated with the Compose project and deletes their stored data. Make sure you have backups before running it.
+
+## Resources
+
+The following documentation was useful for understanding and implementing the project:
+
+- [NGINX Documentation](https://nginx.org/en/docs/)
+- [Docker Documentation](https://docs.docker.com/)
+- [Docker Compose Documentation](https://docs.docker.com/compose/)
+- [MariaDB Documentation](https://mariadb.com/docs/)
+- [WordPress Documentation](https://wordpress.org/documentation/)
+- [PHP Documentation](https://www.php.net/docs.php)
