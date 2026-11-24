@@ -182,7 +182,7 @@ For this project, the expected domain is:
 teesmaa.42.fr
 ```
 
-Add the following entry to your hosts file if it is not already present:
+Add the following entry to your hosts file:
 
 ```text
 127.0.0.1 teesmaa.42.fr
@@ -205,21 +205,32 @@ cd inception
 
 ### 2. Configure secrets and environment variables
 
-Copy the `secrets` directory into the root of the repository.
+If configuration templates (`secrets_example` and `.env.example`) are provided, create the local configuration files by copying the provided templates. From the root of the repository, run:
 
-Copy the `.env` file into the `src` directory.
+```bash
+cp -r secrets_example secrets
+cp srcs/.env.example srcs/.env
+
+```
+If the templates are not provided, manually create a `secrets/` directory at the root of the repository and an `.env` file inside the `srcs/` directory.
+
+For the required environment variables, secret files, and their expected contents, refer to the [Developer Documentation](DEV_DOC.md).
+
+Edit the `.env` file to configure the services and replace the placeholder values in the secret files with secure passwords.
+
+If there are no templates, then create
 
 Make sure all required environment variables and secrets are configured before starting the infrastructure.
 
-The directory structure should look similar to this:
+The directory structure should now look similar to this:
 
 ```text
 inception/
 ├── Makefile
 ├── secrets/
 │   ├── credentials.txt
-│   └── db_password.xt
-│   └── db_root_password.xt
+│   └── db_password.txt
+│   └── db_root_password.txt
 └── src/
     ├── .env
     ├── docker-compose.yml
