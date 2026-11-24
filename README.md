@@ -5,9 +5,7 @@
 
 ## Description
 
-Inception is a Docker-based infrastructure project that aims to introduce system administration using Docker and Docker Compose.
-
-The project consists of setting up a small multi-container infrastructure using custom Docker images. It hosts a WordPress website, uses MariaDB as its database management system, and uses NGINX as a reverse proxy with HTTPS enabled through a self-signed SSL certificate.
+Inception is a Docker-based system administration project. The project consists of setting up a multi-container infrastructure using custom Docker images. It hosts a WordPress website, uses MariaDB as its database management system, and uses NGINX as a reverse proxy with HTTPS enabled through a self-signed SSL certificate.
 
 The infrastructure consists of three containers:
 
@@ -51,7 +49,7 @@ Each container has its own responsibilities:
 - WordPress processes application logic and communicates with MariaDB.
 - MariaDB stores persistent application data.
 
-Only NGINX is exposed to the host machine. The other services communicate through the internal Docker network.
+Only NGINX is exposed to the host machine. The other services communicate through an internal Docker network.
 
 ## Docker Concepts
 
@@ -144,33 +142,12 @@ Secrets are mounted inside containers as files rather than being directly expose
 
 In this project, environment variables and secrets are used to separate general configuration from sensitive credentials.
 
-> Note: Docker secrets have different availability and security characteristics depending on the Docker environment. In particular, standalone Docker Compose deployments do not provide exactly the same secret-management guarantees as Docker Swarm.
-
-## Project Structure
-
-The repository is organized into two main parts:
-
-- `src/`: Contains the Docker Compose configuration and the files required to build and configure the services.
-- `secrets/`: Contains sensitive information required by the infrastructure. This directory is not committed to the repository.
-
-The source directory contains the configuration and build files for the three services:
-
-- **NGINX:** Dockerfile, server configuration, and SSL certificate configuration.
-- **WordPress:** Dockerfile and configuration scripts required to install and configure WordPress and PHP-FPM.
-- **MariaDB:** Dockerfile and initialization scripts required to configure the database.
-
-The `.env` file contains general environment configuration used by Docker Compose and the services.
-
-The `secrets/` directory contains sensitive credentials, such as database and WordPress passwords.
-
-For a more detailed explanation of the configuration files and implementation, refer to the developer documentation.
-
 ## Requirements
 
 Before starting the project, make sure the following tools are installed:
 
 - Docker
-- Docker Compose (or the Docker Compose plugin)
+- Docker Compose
 - GNU Make
 - Git
 
@@ -199,8 +176,8 @@ On Linux and macOS, the hosts file is located at:
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
-cd inception
+git clone https://github.com/treesmaa/Inception.git
+cd Inception
 ```
 
 ### 2. Configure secrets and environment variables
@@ -217,8 +194,6 @@ If the templates are not provided, manually create a `secrets/` directory at the
 For the required environment variables, secret files, and their expected contents, refer to the [Developer Documentation](DEV_DOC.md).
 
 Edit the `.env` file to configure the services and replace the placeholder values in the secret files with secure passwords.
-
-If there are no templates, then create
 
 Make sure all required environment variables and secrets are configured before starting the infrastructure.
 
@@ -273,6 +248,16 @@ To stop and remove the containers and the Docker network, run:
 ```bash
 make down
 ```
+
+To stop and remove containers, Docker network and images from your device, run:
+
+```bash
+make clean
+```
+
+This keeps the persistent data, including the WordPress website files and the MariaDB Database.
+
+For a complete overview of Docker management commands and Makefile targets, refer to the [Developer Documentation](DEV_DOCS.md).
 
 ## Resources
 

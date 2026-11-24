@@ -24,4 +24,7 @@ restart:
 logs:
 	$(COMPOSE) logs -f
 
-.PHONY: all up rebuild down start stop restart logs
+clean:
+	$(COMPOSE) down --rmi all
+
+.PHONY: all up rebuild down start stop restart logs clean
