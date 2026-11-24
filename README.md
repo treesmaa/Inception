@@ -76,31 +76,6 @@ Docker uses operating-system-level virtualization. Containers share the host ope
 
 Docker containers are generally more lightweight than virtual machines because they do not need to run a complete operating system.
 
-### Docker Images vs Containers
-
-A Docker image is a read-only template containing everything needed to run an application, such as its filesystem, dependencies, and configuration.
-
-A container is a running instance of an image. It adds a writable layer on top of the image and provides an isolated environment in which the application executes.
-
-In this project, custom images are built for NGINX, WordPress, and MariaDB. Docker Compose uses these images to create and manage the corresponding containers.
-
-### Docker Compose
-
-Docker Compose is a tool for defining and managing multi-container Docker applications.
-
-Instead of manually creating and configuring each container, Docker Compose uses a `docker-compose.yml` file to describe the infrastructure.
-
-It defines:
-
-- The services and their Docker images or build configurations.
-- Container names and startup dependencies.
-- Environment variables and secrets.
-- Network configuration.
-- Volume mounts for persistent storage.
-- Port mappings between the host and containers.
-
-This makes it possible to start and stop the entire infrastructure using a single command.
-
 ### Docker Network vs Host Network
 
 Docker networks allow containers to communicate with each other in an isolated network environment.
@@ -288,127 +263,6 @@ To stop and remove the containers and the Docker network, run:
 make down
 ```
 
-Persistent data stored in Docker volumes should remain available unless the volumes are explicitly removed.
-
-## Useful Docker Commands
-
-The following commands are useful for inspecting and managing the infrastructure.
-
-### Containers
-
-List running containers:
-
-```bash
-docker ps
-```
-
-List all containers, including stopped ones:
-
-```bash
-docker ps -a
-```
-
-View container logs:
-
-```bash
-docker logs <container_name>
-```
-
-Follow container logs in real time:
-
-```bash
-docker logs -f <container_name>
-```
-
-### Images
-
-List Docker images:
-
-```bash
-docker images
-```
-
-### Volumes
-
-List Docker volumes:
-
-```bash
-docker volume ls
-```
-
-Inspect the MariaDB volume:
-
-```bash
-docker volume inspect mariadb
-```
-
-Inspect the WordPress volume:
-
-```bash
-docker volume inspect wordpress
-```
-
-### Networks
-
-List Docker networks:
-
-```bash
-docker network ls
-```
-
-Inspect the project network:
-
-```bash
-docker network inspect inception
-```
-
-### Docker Compose
-
-Display the status of the services:
-
-```bash
-docker compose ps
-```
-
-View logs from all services:
-
-```bash
-docker compose logs
-```
-
-Follow logs in real time:
-
-```bash
-docker compose logs -f
-```
-
-Rebuild and restart the services:
-
-```bash
-docker compose up -d --build
-```
-
-## Persistent Data
-
-The project uses Docker volumes to ensure that important application data survives container restarts and recreation.
-
-Two volumes are used:
-
-- **MariaDB volume:** Stores the database files.
-- **WordPress volume:** Stores the WordPress application files.
-
-Volumes are stored on the host machine in /home/teesmaa/data.
-
-This separation ensures that the database and website files are not lost when containers are stopped or recreated.
-
-To remove the volumes and their stored data, use:
-
-```bash
-docker compose down -v
-```
-
-**Warning:** This command permanently removes the volumes associated with the Compose project and deletes their stored data. Make sure you have backups before running it.
-
 ## Resources
 
 The following documentation was useful for understanding and implementing the project:
@@ -419,3 +273,20 @@ The following documentation was useful for understanding and implementing the pr
 - [MariaDB Documentation](https://mariadb.com/docs/)
 - [WordPress Documentation](https://wordpress.org/documentation/)
 - [PHP Documentation](https://www.php.net/docs.php)
+
+### Use of AI
+
+AI was used as a learning and development aid throughout the project, particularly for:
+
+- Understanding Docker concepts, containerization, networking, persistent storage, and secrets management.
+- Understanding the configuration and interaction of NGINX, MariaDB, WordPress, and PHP-FPM.
+- Assitance with shell scripting, Dockerfiles, and service initialization scripts.
+- Troubleshooting configuration, connectivity, and container startup issues.
+- Reviewing, structuring, and editing project documentation.
+
+AI-generated suggestions were critically reviewed and adapted to the specific requirements of the project.
+
+## Further documentation
+
+- [User Docs](USER_DOC.md)
+- [Dev Docs](DEV_DOC.md)
