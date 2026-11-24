@@ -223,7 +223,7 @@ From the root of the repository, run:
 make
 ```
 
-This command builds the custom Docker images and starts the containers using Docker Compose.
+This command builds the custom Docker images and starts the containers using Docker Compose. The Makefile automatically creates the host directories required for persistent data storage under `/home/teesmaa/data/` before building and launching the infrastructure.
 
 ### 4. Access the WordPress website
 

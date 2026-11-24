@@ -1,11 +1,16 @@
 COMPOSE = docker compose --env-file srcs/.env -f srcs/docker-compose.yml
+DATA_DIR = /home/teesmaa/data
 
 all: up
 
-up:
+setup: 
+	mkdir -p $(DATA_DIR)/wordpress
+	mkdir -p $(DATA_DIR)/mariadb
+
+up: setup
 	$(COMPOSE) up --detach --build
 
-rebuild:
+rebuild: setup
 	$(COMPOSE) build --no-cache
 	$(COMPOSE) up --detach --force-recreate
 
@@ -27,4 +32,4 @@ logs:
 clean:
 	$(COMPOSE) down --rmi all
 
-.PHONY: all up rebuild down start stop restart logs clean
+.PHONY: all setup up rebuild down start stop restart logs clean
