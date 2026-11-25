@@ -220,23 +220,23 @@ docker compose --env-file srcs/.env -f srcs/docker-compose.yml logs -f wordpress
 
 ## Accessing MariaDB
 
-MariaDB is not published to the host. It is available to the other services through the Docker network, so access it by running the MariaDB client inside the `mariadb` container.
+MariaDB is not published to the host. Access it by running the MariaDB client inside the already-running `mariadb` container.
 
 Open an interactive session as root:
 
 ```bash
-docker compose --env-file srcs/.env -f srcs/docker-compose.yml exec mariadb \
-  sh -c 'mariadb -h127.0.0.1 -uroot -p"$(cat /run/secrets/db_root_password)"'
+docker exec -it mariadb mariadb -u root -p
 ```
 
-Or connect as the WordPress application user directly to the configured database:
+When prompted, enter the password stored in `secrets/db_root_password.txt`. To connect as the WordPress application user, use:
 
 ```bash
-docker compose --env-file srcs/.env -f srcs/docker-compose.yml exec mariadb \
-  sh -c 'mariadb -h127.0.0.1 -u"$MARIADB_USER" -p"$(cat /run/secrets/db_password)" "$MARIADB_DATABASE"'
+docker exec -it mariadb mariadb -u wpuser -p wordpress
 ```
 
-Useful read-only checks include:
+Enter the password stored in `secrets/db_password.txt`. Replace `wpuser` and `wordpress` if `MARIADB_USER` or `MARIADB_DATABASE` have been changed in `srcs/.env`.
+
+Useful checks inside the MariaDB client include:
 
 ```sql
 SHOW DATABASES;
