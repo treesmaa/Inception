@@ -218,6 +218,35 @@ Use `docker compose --env-file srcs/.env -f srcs/docker-compose.yml config` to r
 docker compose --env-file srcs/.env -f srcs/docker-compose.yml logs -f wordpress
 ```
 
+## Accessing MariaDB
+
+MariaDB is not published to the host. It is available to the other services through the Docker network, so access it by running the MariaDB client inside the `mariadb` container.
+
+Open an interactive session as root:
+
+```bash
+docker compose --env-file srcs/.env -f srcs/docker-compose.yml exec mariadb \
+  sh -c 'mariadb -h127.0.0.1 -uroot -p"$(cat /run/secrets/db_root_password)"'
+```
+
+Or connect as the WordPress application user directly to the configured database:
+
+```bash
+docker compose --env-file srcs/.env -f srcs/docker-compose.yml exec mariadb \
+  sh -c 'mariadb -h127.0.0.1 -u"$MARIADB_USER" -p"$(cat /run/secrets/db_password)" "$MARIADB_DATABASE"'
+```
+
+Useful read-only checks include:
+
+```sql
+SHOW DATABASES;
+USE wordpress;
+SHOW TABLES;
+SELECT ID, user_login FROM wp_users;
+```
+
+The database name and table prefix may differ if the configuration changes. Do not publish port `3306` just to access the database, and avoid placing passwords directly in shell history or documentation. Exit the MariaDB client with `exit` or `Ctrl+D`.
+
 ## Persistent data
 
 The Compose file defines two named volumes backed by host directories:
