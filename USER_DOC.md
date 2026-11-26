@@ -120,9 +120,9 @@ WordPress usernames are configured in `srcs/.env`, while initial passwords are s
 | Credential | Location |
 |---|---|
 | WordPress administrator username | `srcs/.env` (`WP_ADMIN_USER`) |
-| WordPress administrator initial password | `secrets/wp_admin_password.txt` |
+| WordPress administrator initial password | `credentials.txt` |
 | WordPress author username | `srcs/.env` (`WP_USER`) |
-| WordPress author initial password | `secrets/wp_user_password.txt` |
+| WordPress author initial password | `credentials.txt` |
 | MariaDB application username | `srcs/.env` (`MARIADB_USER`) |
 | MariaDB application password | `secrets/db_password.txt` |
 | MariaDB root password | `secrets/db_root_password.txt` |
