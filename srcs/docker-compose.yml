@@ -15,7 +15,6 @@ services:
     volumes:
       - wordpress_data:/var/www/html:ro
 
-
   wordpress:
     container_name: wordpress
     image: wordpress
@@ -87,4 +86,4 @@ secrets:
     file: ../secrets/db_password.txt
   credentials:
     file: ../secrets/credentials.txt
-
+    
